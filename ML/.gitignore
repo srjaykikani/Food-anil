@@ -1,9 +1,0 @@
-__pycache__
-
-.ml
-*.pkl
-**/.env
-
-shop/test/*
-
-**/*.log*
