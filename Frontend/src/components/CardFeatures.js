@@ -1,58 +1,45 @@
-import React,{useContext} from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-
-
-import { ShopContext } from "../Context/ShopContext"; 
+import { ShopContext } from "../Context/ShopContext";
 import toast from "react-hot-toast";
+
 const CardFeatures = ({ id, name, image, price, category }) => {
+  const { addToCart, cartItems } = useContext(ShopContext);
 
-  
-
-   const {addToCart,cartItems}=useContext(ShopContext)
-
-   
-    
   const handlecartAddProduct = (e) => {
-
-    if(cartItems[id]>0){
-      toast("item Already Exist")
+    if (cartItems[id] > 0) {
+      toast("Item already in cart");
+    } else {
+      addToCart(id);
+      toast.success("Item added to cart");
     }
-    else{
-     
-      addToCart(id)
-    }
-  
-   
   };
+
   return (
-    <div className="w-full min-w-[200px] max-w-[200px] bg-white px-3 p-5 drop-shadow-lg hover:shadow-lg cursor-pointer flex flex-col">
+    <div className="product-card w-64 flex-shrink-0">
       <Link
         to={`/menu/${id}`}
         onClick={() => {
           window.scrollTo({ top: "0", behavior: "smooth" });
         }}
+        className="block"
       >
-        
-        <div className="h-28 flex flex-col justify-center items-center">
-          <img src={image} className="h-full" alt={name} />
+        <img src={image} className="product-image" alt={name} />
+        <div className="product-info">
+          <h3 className="product-title">{name}</h3>
+          <p className="text-sm text-gray-600 mb-2">{category}</p>
+          <p className="product-price">₹{price}</p>
         </div>
-        <h3 className="font-semibold text-slate-600 capitalize text-lg mt-4 whitespace-nowrap overflow-hidden">
-          {name}
-        </h3>
-        <p className="font-medium text-slate-500">{category}</p>
-        <p className="font-bold">
-          <span className="text-red-500">₹</span>
-          <span>{price}</span>
-        </p>
       </Link>
       <button
-        className="bg-yellow-500 py-1 my-2 w-full"
+        className="btn-secondary w-full mt-2"
         onClick={handlecartAddProduct}
       >
-        Add Cart
+        Add to Cart
       </button>
     </div>
   );
 };
 
 export default CardFeatures;
+

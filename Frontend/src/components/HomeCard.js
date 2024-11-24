@@ -1,30 +1,31 @@
 import React from "react";
 import { Link } from "react-router-dom";
-const HomeCard = ({ name, image, price, category,id }) => {
+
+const HomeCard = ({ name, image, price, category, id, loading }) => {
   return (
-    <div className="bg-white  shadow-md p-2 rounded min-w-[150px]">
-   { name && 
-      <Link to={`/menu/${id}`}>
-       
-          <div className="w-40 min-h-[150px]">
-            <img src={image} alt="" className="h-full w-full " />
+    <div className="product-card">
+      {loading ? (
+        <div className="animate-pulse">
+          <div className="w-full aspect-square bg-gray-300 rounded-t-lg"></div>
+          <div className="p-4">
+            <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/4"></div>
           </div>
-
-          <h3 className="font-semibold text-slate-600 text-center capitalize text-lg">
-            {name}
-          </h3>
-          <p className="font-medium text-center text-slate-500">{category}</p>
-          <p className="text-center font-bold">
-            <span className="text-red-500">₹</span>
-            <span>{price}</span>
-          </p>
-        
-      </Link>
-
-   }
-    
+        </div>
+      ) : (
+        <Link to={`/menu/${id}`} className="block">
+          <img src={image} alt={name} className="product-image" />
+          <div className="product-info">
+            <h3 className="product-title">{name}</h3>
+            <p className="text-sm text-gray-600 mb-2">{category}</p>
+            <p className="product-price">₹{price}</p>
+          </div>
+        </Link>
+      )}
     </div>
   );
 };
 
 export default HomeCard;
+

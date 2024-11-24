@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
-import FilterProduct from "../components/FilterProduct";
-import CardFeatures from "../components/CardFeatures";
+import FilterProduct from "./FilterProduct";
+import CardFeatures from "./CardFeatures";
 import Loading from "./Loading";
 import { ShopContext } from "../Context/ShopContext";
+
 const AllProduct = ({ heading }) => {
   const { allProduct } = useContext(ShopContext);
   const categoryList = [...new Set(allProduct.map((e1) => e1.category))];
@@ -19,15 +20,15 @@ const AllProduct = ({ heading }) => {
     const filter = allProduct.filter(
       (e1) => e1.category.toLowerCase() === category.toLowerCase()
     );
-
     setDatafilter(() => {
       return [...filter];
     });
   };
+
   return (
-    <div className="my-5">
-      <h2 className="font-bold text-2xl text-slate-800 mb-2">{heading}</h2>
-      <div className="flex gap-4 justify-center overflow-scroll scrollbar-none">
+    <div className="my-8">
+      <h2 className="section-title">{heading}</h2>
+      <div className="flex gap-4 justify-center overflow-x-auto scrollbar-none mb-8">
         {categoryList[0] ? (
           categoryList.map((e1, index) => {
             return (
@@ -46,7 +47,7 @@ const AllProduct = ({ heading }) => {
         )}
       </div>
 
-      <div className="flex flex-wrap justify-center gap-3 my-5">
+      <div className="product-grid">
         {dataFilter[0] ? (
           dataFilter.map((e1) => {
             return (
@@ -69,3 +70,4 @@ const AllProduct = ({ heading }) => {
 };
 
 export default AllProduct;
+
