@@ -1,0 +1,25 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URL=mongodb+srv://anil:anil1234@anil.4ykvddw.mongodb.net/user?retryWrites=true&w=majority&appName=anil
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
