@@ -1,8 +1,7 @@
 import "./App.css";
-import Header from "./components/Header";
+import { Header } from "./components/Header";
 import { Outlet } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-
 
 function App() {
   return (

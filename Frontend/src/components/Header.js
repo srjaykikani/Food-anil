@@ -1,119 +1,130 @@
-import React, { useState, useContext } from "react";
-import logo from "../assest/logo_a.jpeg";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaCartShopping } from "react-icons/fa6";
-
-import { FaUser } from "react-icons/fa";
-
-import toast from "react-hot-toast";
+import { ShoppingCart, User, ChevronDown } from 'lucide-react';
+import { toast } from "react-hot-toast";
+import logo from "../assest/logo_a.jpeg";
 import { ShopContext } from "../Context/ShopContext";
 
-export default function Header() {
+export function Header() {
   const [showMenu, setShowMenu] = useState(false);
-  const handleShowMenu = () => {
-    setShowMenu((preve) => !preve);
-  };
-  const handlelogout = () => {
-    localStorage.removeItem("auth-token");
-    window.location.replace("/");
-
-    setShowMenu((preve) => !preve);
-    toast("logout successfully");
-  };
-
+  const menuRef = useRef(null);
   const { uniqueItem, userDetails } = useContext(ShopContext);
 
+  const handleLogout = () => {
+    localStorage.removeItem("auth-token");
+    window.location.replace("/");
+    setShowMenu(false);
+    toast.success("Logged out successfully");
+  };
+
+  const isAdmin = userDetails?.email === process.env.REACT_APP_ADMIN_EMAIL;
+  const isLoggedIn = !!localStorage.getItem("auth-token");
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuRef]);
 
   return (
-    <header className="fixed shadow-md w-full h-16 px-2 md:px-4 z-50 bg-white">
-      <div className="flex items-center h-full justify-between">
-        <Link to={""}>
-          <div className="h-16">
-            <img src={logo} alt="" className="h-full w-20" />
-          </div>
+    <header className="fixed top-0 z-50 w-full border-b bg-white shadow-sm">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <Link to="/" className="flex items-center space-x-2">
+          <img src={logo} alt="Logo" className="h-16 w-20" />
         </Link>
 
-        <div className="flex items-center gap-4 md:gap-7">
-          <nav className="gap-4 md:gap-6 text-base md:text-lg hidden md:flex">
-            <Link to={""}>Home</Link>
-
-            <Link to={"about"}>about</Link>
-            <Link to={"contact"}>contact</Link>
+        <div className="flex items-center space-x-4 md:space-x-6">
+          <nav className="hidden space-x-4 md:flex md:space-x-6">
+            <Link to="/" className="text-sm font-medium text-gray-700 hover:text-gray-900">
+              Home
+            </Link>
+            <Link to="/about" className="text-sm font-medium text-gray-700 hover:text-gray-900">
+              About
+            </Link>
+            <Link to="/contact" className="text-sm font-medium text-gray-700 hover:text-gray-900">
+              Contact
+            </Link>
           </nav>
 
-          <div className="text-2xl text-slate-600 relative">
-            <Link to={"/cart"}>
-              <FaCartShopping />
-            </Link>
-            <div className="absolute -top-2 -right-2 text-white bg-red-600 h-4 w-4 rounded-full text-sm text-center flex justify-center items-center">
+          <Link to="/cart" className="relative text-gray-700 hover:text-gray-900">
+            <ShoppingCart className="h-6 w-6" />
+            <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
               {uniqueItem()}
-            </div>
-          </div>
+            </span>
+          </Link>
 
-          <div className=" text-slate-600">
-            <div
-              className="text-3xl cursor-pointer h-10 w-10 rounded-full overflow-hidden drop-shadow "
-              onClick={handleShowMenu}
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="flex items-center space-x-1 rounded-full bg-gray-100 p-1 text-gray-700 hover:bg-gray-200"
             >
               {userDetails && userDetails.image ? (
-                <img src={userDetails.image} alt="" className="w-full h-full" />
+                <img
+                  src={userDetails.image}
+                  alt={userDetails.firstName}
+                  className="h-8 w-8 rounded-full object-cover"
+                />
               ) : (
-                <FaUser />
+                <User className="h-8 w-8 rounded-full bg-gray-300 p-1" />
               )}
-            </div>
-
+              <ChevronDown className="h-4 w-4" />
+            </button>
             {showMenu && (
-              <div className="absolute right-2 bg-white py-2  shadow drop-shadow-md flex flex-col min-w-[120px] text-center">
-                {userDetails.email === process.env.REACT_APP_ADMIN_EMAIL && (
+              <div className="absolute right-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
+                {isAdmin && (
                   <Link
-                    to={"newproduct"}
-                    className="whitespace-nowrap cursor-pointer px-2"
+                    to="/newproduct"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     New Product
                   </Link>
                 )}
-                {localStorage.getItem("auth-token") ? (
-                  <p
-                    className="cursor-pointer px-2 bg-red-500 text-white"
-                    onClick={handlelogout}
+                {isLoggedIn ? (
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
                   >
-                    LogOut ({userDetails.firstName})
-                  </p>
+                    Logout ({userDetails?.firstName})
+                  </button>
                 ) : (
                   <Link
-                    to={"login"}
-                    className="whitespace-nowrap cursor-pointer px-2"
+                    to="/login"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Login
                   </Link>
                 )}
-
-                <nav className=" text-base md:text-lg flex flex-col md:hidden mt:1">
+                <div className="md:hidden">
                   <Link
-                    to={""}
-                    className="whitespace-nowrap cursor-pointer px-2 py-1"
+                    to="/"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Home
                   </Link>
                   <Link
-                    to={"menu"}
-                    className="whitespace-nowrap cursor-pointer px-2 py-1"
+                    to="/menu"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Menu
                   </Link>
                   <Link
-                    to={"about"}
-                    className="whitespace-nowrap cursor-pointer px-2 py-1"
+                    to="/about"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    about
+                    About
                   </Link>
                   <Link
-                    to={"contact"}
-                    className="whitespace-nowrap cursor-pointer px-2 py-1"
+                    to="/contact"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    contact
+                    Contact
                   </Link>
-                </nav>
+                </div>
               </div>
             )}
           </div>
