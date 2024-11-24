@@ -7,3 +7,6 @@
 **/secret_key.txt
 
 logs/**/*.log*
+
+# dependencies
+/node_modules
