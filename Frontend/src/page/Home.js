@@ -38,7 +38,7 @@ const Home = () => {
             />
           </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Fresh Groceries <span className="text-green-600">Delivered</span> to Your Doorstep
+            Fresh <span className="text-green-600">Groceries</span> Delivered to Your Doorstep
           </h1>
           <p className="text-gray-600 mb-6">
             Experience the convenience of having fresh, high-quality groceries delivered right to your home. Shop from our wide selection of fruits, vegetables, and pantry essentials.
@@ -73,12 +73,14 @@ const Home = () => {
           <button
             onClick={prevProduct}
             className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition duration-300 mr-2"
+            aria-label="Previous product"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <button
             onClick={nextProduct}
             className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition duration-300"
+            aria-label="Next product"
           >
             <ChevronRight className="w-6 h-6" />
           </button>
@@ -106,3 +108,4 @@ const Home = () => {
 };
 
 export default Home;
+

@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import signi from "../assest/login-animation.gif";
-import { BiShow, BiHide } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { Eye, EyeOff, Upload } from 'lucide-react';
 
 const Signup = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [CshowPassword, setCShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [file, setFile] = useState(null);
   const [data, setData] = useState({
     firstName: "",
@@ -18,12 +17,12 @@ const Signup = () => {
     image: "",
   });
 
-  const handleShowPassword = () => {
-    setShowPassword((prev) => !prev);
-  };
-
-  const handleCShowPassword = () => {
-    setCShowPassword((prev) => !prev);
+  const handleShowPassword = (field) => {
+    if (field === 'password') {
+      setShowPassword((prev) => !prev);
+    } else {
+      setShowConfirmPassword((prev) => !prev);
+    }
   };
 
   const handleOnChange = (e) => {
@@ -41,29 +40,33 @@ const Signup = () => {
 
     if (firstName && lastName && email && password && confirmPassword) {
       if (password === confirmPassword) {
-        const fetchData = await fetch(
-          `${process.env.REACT_APP_API_URL}/signup`,
-          {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-            },
-            body: JSON.stringify(data),
+        try {
+          const fetchData = await fetch(
+            `${process.env.REACT_APP_API_URL}/signup`,
+            {
+              method: "POST",
+              headers: {
+                "content-type": "application/json",
+              },
+              body: JSON.stringify(data),
+            }
+          );
+
+          const result = await fetchData.json();
+
+          toast(result.message);
+
+          if (result.alert) {
+            navigate("/login");
           }
-        );
-
-        const result = await fetchData.json();
-
-        toast(result.message);
-
-        if (result.alert) {
-          navigate("/login");
+        } catch (error) {
+          toast.error("An error occurred. Please try again.");
         }
       } else {
-        alert("Confirm password does not match.");
+        toast.error("Passwords do not match.");
       }
     } else {
-      alert("Please fill out all required fields.");
+      toast.error("Please fill out all required fields.");
     }
   };
 
@@ -74,123 +77,173 @@ const Signup = () => {
     let formData = new FormData();
     formData.append("image", file);
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/upload`, {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/upload`, {
+        method: "POST",
+        body: formData,
+      });
 
-    const responseData = await response.json();
+      const responseData = await response.json();
 
-    if (responseData.success) {
-      setData((prev) => ({
-        ...prev,
-        image: responseData.image_url,
-      }));
+      if (responseData.success) {
+        setData((prev) => ({
+          ...prev,
+          image: responseData.image_url,
+        }));
+        toast.success("Profile image uploaded successfully");
+      } else {
+        toast.error("Failed to upload profile image");
+      }
+    } catch (error) {
+      toast.error("An error occurred while uploading the image");
     }
   };
 
   return (
-    <div className="p-3 md:p-4">
-      <div className="w-full max-w-md bg-white m-auto flex flex-col p-4">
-        <div className="w-20 h-20 m-auto overflow-hidden rounded-full drop-shadow-md relative">
-          <img
-            src={data.image ? data.image : signi}
-            className="w-full h-full"
-            alt="Profile"
-          />
-          <label htmlFor="profileImage">
-            <div className="absolute bottom-0 h-1/3 bg-slate-500 bg-opacity-50 w-full text-center cursor-pointer">
-              <p className="text-sm p-1 text-white">Upload</p>
-            </div>
-            <input
-              type="file"
-              id="profileImage"
-              accept="image/*"
-              className="hidden"
-              onChange={handleProfileImage}
-            />
-          </label>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Create your account</h2>
         </div>
-
-        <form className="w-full py-3 flex flex-col" onSubmit={handleSubmit}>
-          <label htmlFor="firstName">First Name</label>
-          <input
-            type="text"
-            name="firstName"
-            id="firstName"
-            value={data.firstName}
-            onChange={handleOnChange}
-            className="mb-2 mt-1 w-full bg-slate-200 px-2 py-1 rounded focus-within:outline-blue-300"
-          />
-
-          <label htmlFor="lastName">Last Name</label>
-          <input
-            type="text"
-            name="lastName"
-            id="lastName"
-            value={data.lastName}
-            onChange={handleOnChange}
-            className="mb-2 mt-1 w-full bg-slate-200 px-2 py-1 rounded focus-within:outline-blue-300"
-          />
-
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            value={data.email}
-            onChange={handleOnChange}
-            className="mb-2 mt-1 w-full bg-slate-200 px-2 py-1 rounded focus-within:outline-blue-300"
-          />
-
-          <label htmlFor="password">Password</label>
-          <div className="flex px-2 py-1 bg-slate-200 rounded mb-2 mt-1 focus-within:outline focus-within:outline-blue-300">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              id="password"
-              onChange={handleOnChange}
-              value={data.password}
-              className="w-full bg-slate-200 border-none outline-none"
-            />
-            <span
-              onClick={handleShowPassword}
-              className="flex text-xl cursor-pointer"
-            >
-              {showPassword ? <BiShow /> : <BiHide />}
-            </span>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="firstName" className="sr-only">First Name</label>
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                placeholder="First Name"
+                value={data.firstName}
+                onChange={handleOnChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="lastName" className="sr-only">Last Name</label>
+              <input
+                id="lastName"
+                name="lastName"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                placeholder="Last Name"
+                value={data.lastName}
+                onChange={handleOnChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="sr-only">Email address</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                placeholder="Email address"
+                value={data.email}
+                onChange={handleOnChange}
+              />
+            </div>
+            <div className="relative">
+              <label htmlFor="password" className="sr-only">Password</label>
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                placeholder="Password"
+                value={data.password}
+                onChange={handleOnChange}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => handleShowPassword('password')}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-400" />
+                )}
+              </button>
+            </div>
+            <div className="relative">
+              <label htmlFor="confirmPassword" className="sr-only">Confirm Password</label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                placeholder="Confirm Password"
+                value={data.confirmPassword}
+                onChange={handleOnChange}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => handleShowPassword('confirmPassword')}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-400" />
+                )}
+              </button>
+            </div>
           </div>
 
-          <label htmlFor="confirmPassword">Confirm Password</label>
-          <div className="flex px-2 py-1 bg-slate-200 rounded mb-2 mt-1 focus-within:outline focus-within:outline-blue-300">
-            <input
-              type={CshowPassword ? "text" : "password"}
-              name="confirmPassword"
-              id="confirmPassword"
-              onChange={handleOnChange}
-              value={data.confirmPassword}
-              className="w-full bg-slate-200 border-none outline-none"
-            />
-            <span
-              onClick={handleCShowPassword}
-              className="flex text-xl cursor-pointer"
-            >
-              {CshowPassword ? <BiShow /> : <BiHide />}
-            </span>
+          <div>
+            <label htmlFor="profileImage" className="block text-sm font-medium text-gray-700">
+              Profile Picture
+            </label>
+            <div className="mt-1 flex items-center">
+              <span className="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
+                {data.image ? (
+                  <img src={data.image} alt="Profile" className="h-full w-full object-cover" />
+                ) : (
+                  <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                )}
+              </span>
+              <label
+                htmlFor="profileImage"
+                className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                <Upload className="h-5 w-5 inline-block mr-2" />
+                Upload
+              </label>
+              <input
+                type="file"
+                id="profileImage"
+                accept="image/*"
+                className="hidden"
+                onChange={handleProfileImage}
+              />
+            </div>
           </div>
 
-          <button
-            type="submit"
-            className="max-w-[120px] w-full m-auto bg-red-500 hover:bg-red-600 cursor-pointer text-white text-xl font-medium text-center py-1 rounded-full mt-4"
-          >
-            Signup
-          </button>
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              Sign up
+            </button>
+          </div>
         </form>
 
-        <p>
+        <p className="mt-2 text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <Link to={"/login"} className="text-red-500">
-            Login
+          <Link to="/login" className="font-medium text-green-600 hover:text-green-500">
+            Log in
           </Link>
         </p>
       </div>
@@ -199,3 +252,4 @@ const Signup = () => {
 };
 
 export default Signup;
+

@@ -23,19 +23,19 @@ code {
 /* Custom Tailwind classes */
 @layer components {
   .btn-primary {
-    @apply bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition duration-300;
+    @apply bg-green-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-600 transition duration-300 transform hover:-translate-y-1 hover:shadow-md;
   }
 
   .btn-secondary {
-    @apply bg-orange-500 text-white font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300;
+    @apply bg-orange-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-orange-600 transition duration-300 transform hover:-translate-y-1 hover:shadow-md;
   }
 
   .product-grid {
-    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6;
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8;
   }
 
   .product-card {
-    @apply bg-white rounded-lg shadow-md overflow-hidden transition duration-300 hover:shadow-lg;
+    @apply bg-white rounded-xl shadow-md overflow-hidden transition duration-300 hover:shadow-xl transform hover:-translate-y-2;
   }
 
   .product-image {
@@ -43,7 +43,7 @@ code {
   }
 
   .product-info {
-    @apply p-4;
+    @apply p-5;
   }
 
   .product-title {
@@ -55,7 +55,7 @@ code {
   }
 
   .section-title {
-    @apply text-3xl font-bold text-green-600 mb-6;
+    @apply text-3xl font-bold text-green-600 mb-8;
   }
 }
 

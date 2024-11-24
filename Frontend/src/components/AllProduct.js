@@ -7,7 +7,6 @@ import { ShopContext } from "../Context/ShopContext";
 const AllProduct = ({ heading }) => {
   const { allProduct } = useContext(ShopContext);
   const categoryList = [...new Set(allProduct.map((e1) => e1.category))];
-
   const [dataFilter, setDatafilter] = useState([]);
   const [filterBy, setFilterBy] = useState("");
 
@@ -26,41 +25,34 @@ const AllProduct = ({ heading }) => {
   };
 
   return (
-    <div className="my-8">
-      <h2 className="section-title">{heading}</h2>
+    <div className="my-12 container mx-auto px-4">
+      <h2 className="text-3xl font-bold text-green-600 mb-6">{heading}</h2>
       <div className="flex gap-4 justify-center overflow-x-auto scrollbar-none mb-8">
         {categoryList[0] ? (
-          categoryList.map((e1, index) => {
-            return (
-              <FilterProduct
-                key={index}
-                category={e1}
-                isActive={e1.toLowerCase() === filterBy.toLowerCase()}
-                onClick={() => {
-                  handlefilterProduct(e1);
-                }}
-              />
-            );
-          })
+          categoryList.map((e1, index) => (
+            <FilterProduct
+              key={index}
+              category={e1}
+              isActive={e1.toLowerCase() === filterBy.toLowerCase()}
+              onClick={() => handlefilterProduct(e1)}
+            />
+          ))
         ) : (
           <Loading />
         )}
       </div>
-
-      <div className="product-grid">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {dataFilter[0] ? (
-          dataFilter.map((e1) => {
-            return (
-              <CardFeatures
-                key={e1._id}
-                id={e1._id}
-                image={e1.image}
-                name={e1.name}
-                price={e1.price}
-                category={e1.category}
-              />
-            );
-          })
+          dataFilter.map((e1) => (
+            <CardFeatures
+              key={e1._id}
+              id={e1._id}
+              image={e1.image}
+              name={e1.name}
+              price={e1.price}
+              category={e1.category}
+            />
+          ))
         ) : (
           <Loading />
         )}
@@ -70,4 +62,3 @@ const AllProduct = ({ heading }) => {
 };
 
 export default AllProduct;
-

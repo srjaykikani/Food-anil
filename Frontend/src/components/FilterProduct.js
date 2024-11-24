@@ -1,20 +1,20 @@
 import React from "react";
-import { CiForkAndKnife } from "react-icons/ci";
+import { Utensils } from 'lucide-react';
 
 const FilterProduct = ({ category, onClick, isActive }) => {
   return (
-    <div onClick={onClick}>
+    <div onClick={onClick} className="flex flex-col items-center cursor-pointer">
       <div
-        className={`text-3xl p-5 rounded-full cursor-pointer ${
-          isActive ? "bg-yellow-800" : "bg-yellow-500"
+        className={`p-3 rounded-full transition duration-300 ${
+          isActive ? "bg-green-600 text-white" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
         }`}
       >
-        <CiForkAndKnife />
+        <Utensils className="w-6 h-6" />
       </div>
-
-      <p className="text-center font-medium my-1 capitalize">{category}</p>
+      <p className="text-sm font-medium mt-2 capitalize">{category}</p>
     </div>
   );
 };
 
 export default FilterProduct;
+
